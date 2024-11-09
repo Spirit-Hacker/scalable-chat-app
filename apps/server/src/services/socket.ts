@@ -5,14 +5,14 @@ import Redis from "ioredis";
 
 const pub = new Redis({
   host: process.env.REDIS_AIVEN_HOST,
-  port: 22375,
+  port: "",
   username: process.env.REDIS_AIVEN_USERNAME,
   password: process.env.REDIS_AIVEN_PASSWORD,
 });
 
 const sub = new Redis({
   host: process.env.REDIS_AIVEN_HOST,
-  port: 22375,
+  port: "",
   username: process.env.REDIS_AIVEN_USERNAME,
   password: process.env.REDIS_AIVEN_PASSWORD,
 });
