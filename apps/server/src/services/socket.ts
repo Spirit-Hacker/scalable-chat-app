@@ -4,17 +4,17 @@ import { Server } from "socket.io";
 import Redis from "ioredis";
 
 const pub = new Redis({
-  host: process.env.REDIS_AIVEN_HOST,
+  host: "",
   port: "",
-  username: process.env.REDIS_AIVEN_USERNAME,
-  password: process.env.REDIS_AIVEN_PASSWORD,
+  username: "",
+  password: "",
 });
 
 const sub = new Redis({
-  host: process.env.REDIS_AIVEN_HOST,
+  host: "",
   port: "",
-  username: process.env.REDIS_AIVEN_USERNAME,
-  password: process.env.REDIS_AIVEN_PASSWORD,
+  username: "",
+  password: "",
 });
 
 class SocketService {
