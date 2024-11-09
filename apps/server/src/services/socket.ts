@@ -5,14 +5,14 @@ import Redis from "ioredis";
 
 const pub = new Redis({
   host: "",
-  port: "",
+  port: 0,
   username: "",
   password: "",
 });
 
 const sub = new Redis({
   host: "",
-  port: "",
+  port: 0,
   username: "",
   password: "",
 });
