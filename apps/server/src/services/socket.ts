@@ -2,11 +2,12 @@ import dotenv from "dotenv";
 dotenv.config();
 import { Server } from "socket.io";
 import Redis from "ioredis";
+import { produceMessage } from "./kafka";
 
 const pub = new Redis({
   host: process.env.REDIS_AIVEN_HOST,
   port: parseInt(process.env.REDIS_AIVEN_PORT || "0", 10),
-  username: process.env.REDIS_AIVEN_USERNAME, 
+  username: process.env.REDIS_AIVEN_USERNAME,
   password: process.env.REDIS_AIVEN_PASSWORD,
 });
 
@@ -50,6 +51,9 @@ class SocketService {
       if (channel === "MESSAGES") {
         console.log("New message received from redis: ", message);
         io.emit("message", message);
+
+        // produce message to kafka broker
+        produceMessage(message);
       }
     });
   }
