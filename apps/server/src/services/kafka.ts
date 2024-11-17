@@ -1,7 +1,6 @@
 import { Kafka, Producer } from "kafkajs";
 import fs from "fs";
 import path from "path";
-import prismaClient from "./prisma";
 
 const kafka = new Kafka({
   brokers: [process.env.KAFKA_HOST || ""],
@@ -52,11 +51,7 @@ export async function startMessageConsumer() {
 
       console.log("New message received on kafka");
       try {
-        await prismaClient.message.create({
-          data: {
-            text: message.value.toString(),
-          },
-        });
+        // TODO: Add database query
       } catch (err) {
         console.log("Something is wrong");
         pause();
