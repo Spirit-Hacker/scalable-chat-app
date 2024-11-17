@@ -1,6 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import { Kafka, Producer } from "kafkajs";
 import fs from "fs";
 import path from "path";
+import connectDB from "./db";
+import Message from "../models/message.model";
 
 const kafka = new Kafka({
   brokers: [process.env.KAFKA_HOST || ""],
@@ -28,6 +33,7 @@ export async function createProducer() {
 }
 
 export async function produceMessage(message: string) {
+  console.log("New message produced to kafka", message);
   const producer = await createProducer();
   await producer.send({
     messages: [{ key: `message-${Date.now()}`, value: message }],
@@ -39,6 +45,7 @@ export async function produceMessage(message: string) {
 
 export async function startMessageConsumer() {
   console.log("Consumer is running...");
+  await connectDB();
 
   const consumer = kafka.consumer({ groupId: "default" });
   await consumer.connect();
@@ -49,9 +56,14 @@ export async function startMessageConsumer() {
     eachMessage: async ({ message, pause }) => {
       if (!message.value) return;
 
-      console.log("New message received on kafka");
+      console.log("New message received on kafka", message.value.toString());
       try {
         // TODO: Add database query
+        const newMessage = new Message({
+          content: message.value,
+        });
+
+        await newMessage.save();
       } catch (err) {
         console.log("Something is wrong");
         pause();

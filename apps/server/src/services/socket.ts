@@ -43,7 +43,7 @@ class SocketService {
       socket.on("event:message", async ({ message }: { message: string }) => {
         console.log(`New message received from ${socket.id}: ${message}`);
         // publish this message to redis
-        await pub.publish("MESSAGES", JSON.stringify({ message }));
+        await pub.publish("MESSAGES", message);
       });
     });
 

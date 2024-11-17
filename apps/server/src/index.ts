@@ -14,7 +14,7 @@ function init() {
 
   socketService.io.attach(httpServer);
 
-  httpServer.listen(PORT, () => {
+  httpServer.listen(PORT, async() => {
     console.log(`Server running on PORT: ${PORT}`);
   });
 
