@@ -1,17 +1,31 @@
-import {Schema, Document, model} from "mongoose";
+import { Schema, Document, model } from "mongoose";
+import User from "./user.model";
 
 interface Message extends Document {
-    content: String;
-    sender?: String;
+  content: string;
+  sender: Schema.Types.ObjectId;
+  receiver: Schema.Types.ObjectId;
 }
 
-const messageSchema = new Schema<Message>({
+const messageSchema = new Schema<Message>(
+  {
     content: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
-    sender: String
-}, { timestamps: true });
+    sender: {
+      ref: "User",
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
+    receiver: {
+      ref: "User",
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
 const Message = model<Message>("Message", messageSchema);
 export default Message;

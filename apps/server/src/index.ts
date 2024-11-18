@@ -4,12 +4,13 @@ dotenv.config();
 import http from "http";
 import SocketService from "./services/socket";
 import { startMessageConsumer } from "./services/kafka";
+import { app } from "./app";
 
 function init() {
   startMessageConsumer();
   const socketService = new SocketService();
 
-  const httpServer = http.createServer();
+  const httpServer = http.createServer(app);
   const PORT = process.env.PORT || 8000;
 
   socketService.io.attach(httpServer);
