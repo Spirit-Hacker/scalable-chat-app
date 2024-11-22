@@ -15,9 +15,7 @@ export const verifyUserAccessToken = async (
   next: NextFunction
 ) => {
   try {
-    const accessToken = req.cookies.accessToken;
-    console.log("accessToken: ", accessToken);
-    console.log("req cookies: ", req.cookies);
+    const accessToken = req.headers.authorization;
 
     if (!accessToken) {
       res.status(401).json({
