@@ -4,20 +4,25 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+app.use(cookieParser());
+app.use(express.json());
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173"],
     methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
+    credentials: true,
   })
 );
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 // import routes
 import userRouter from "./routes/user.routes";
+import messageRouter from "./routes/message.routes";
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/messages", messageRouter);
 
 export { app };

@@ -25,8 +25,12 @@ class SocketService {
     console.log("Socket server is running...");
     this._io = new Server({
       cors: {
-        origin: ["http://localhost:3000", "http://localhost:3001"],
-        allowedHeaders: "*",
+        origin: [
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "http://localhost:5173",
+        ],
+        allowedHeaders: ["Content-Type", "Authorization"],
       },
     });
 
@@ -40,17 +44,35 @@ class SocketService {
     io.on("connect", (socket) => {
       console.log(`New Socket Connected ${socket.id}`);
 
-      socket.on("event:message", async ({ message }: { message: string }) => {
-        console.log(`New message received from ${socket.id}: ${message}`);
-        // publish this message to redis
-        await pub.publish("MESSAGES", message);
-      });
+      socket.on(
+        "event:message",
+        async ({
+          message,
+          receiverId,
+          senderId,
+        }: {
+          message: string;
+          receiverId: string;
+          senderId: string;
+        }) => {
+          console.log(
+            `New message received from ${socket.id}: ${message}, : ${receiverId} : ${senderId}`
+          );
+          // publish this message to redis
+          const data = {
+            message,
+            receiverId,
+            senderId,
+          };
+          await pub.publish("MESSAGES", JSON.stringify(data));
+        }
+      );
     });
 
     sub.on("message", async (channel, message) => {
       if (channel === "MESSAGES") {
         console.log("New message received from redis: ", message);
-        io.emit("message", message);
+        io.emit("message", JSON.parse(message).message);
 
         // produce message to kafka broker
         produceMessage(message);

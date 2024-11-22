@@ -31,7 +31,7 @@ export const registerUser = async (
       return;
     }
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ $or: [{ username }, { email }] });
 
     if (user) {
       res.status(400).json({
@@ -116,11 +116,15 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       .status(200)
       .cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 15 * 60 * 1000,
+        sameSite: "none",
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 15 * 24 * 60 * 60 * 1000,
+        sameSite: "none",
       })
       .json({
         success: true,
@@ -131,6 +135,92 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
           refreshToken,
         },
       });
+
+    return;
+  } catch (error: Error | any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+    return;
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const user = await User.findByIdAndUpdate(
+      { userId },
+      {
+        $unset: {
+          refreshToken: 1,
+        },
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+
+      return;
+    }
+
+    res
+      .status(200)
+      .clearCookie("accessToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 15 * 60 * 1000,
+        sameSite: "none",
+      })
+      .clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 15 * 24 * 60 * 60 * 1000,
+        sameSite: "none",
+      })
+      .json({
+        success: true,
+        message: "User logged out, successfully",
+      });
+
+    return;
+  } catch (error: Error | any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+    return;
+  }
+};
+
+export const getAllUsers = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = (req as any).user._id;
+    // const userId = "673c92f9efaa5f0e4077763b";
+
+    const users = await User.find({ _id: { $ne: userId } });
+    if (!users) {
+      res.status(400).json({
+        success: false,
+        message: "No users found.",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Users fetched successfully.",
+      data: users,
+    });
 
     return;
   } catch (error: Error | any) {

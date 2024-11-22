@@ -1,5 +1,4 @@
 import { Schema, Document, model } from "mongoose";
-import User from "./user.model";
 
 interface Message extends Document {
   content: string;

@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import connectDB from "./db";
 import Message from "../models/message.model";
+import axios from "axios";
 
 const kafka = new Kafka({
   brokers: [process.env.KAFKA_HOST || ""],
@@ -59,11 +60,21 @@ export async function startMessageConsumer() {
       console.log("New message received on kafka", message.value.toString());
       try {
         // TODO: Add database query
-        const newMessage = new Message({
-          content: message.value,
-        });
+        console.log("Message in kafka consumer", message.value.toString());
 
-        await newMessage.save();
+        const data = JSON.parse(message.value.toString());
+        const response = await axios
+          .post(
+            `http://localhost:8000/api/v1/messages/sendMessage/${data.receiverId}`,
+            {
+              message: data.message,
+              senderId: data.senderId,
+            }
+          )
+          .then((res) => res.data)
+          .catch((err) => console.log(err));
+
+        console.log("Response: ", response);
       } catch (err) {
         console.log("Something is wrong");
         pause();
