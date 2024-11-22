@@ -8,6 +8,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   messages: Message[];
+  isOnline: boolean;
   refreshToken: string;
   generateAccessToken: () => string;
   generateRefreshToken: () => string;
@@ -36,6 +37,10 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: true,
+    },
+    isOnline: {
+      type: Boolean,
+      default: false,
     },
     messages: [
       {

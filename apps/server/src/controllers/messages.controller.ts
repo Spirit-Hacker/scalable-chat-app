@@ -5,18 +5,17 @@ import { Schema } from "mongoose";
 
 export const storeMessage = async (req: Request, res: Response) => {
   try {
-    const { senderId, message: messageText } = req.body;
+    const { senderId, message: messageText, isReceiverOnline } = req.body;
     const { id: receiverId } = req.params;
 
-    console.log("Inside storeMessage", senderId, messageText, receiverId);
+    // console.log("Inside storeMessage", senderId, messageText, receiverId);
 
     const newMessage = new Message({
       content: messageText,
       sender: senderId,
       receiver: receiverId,
+      isDelivered: isReceiverOnline,
     });
-
-    await newMessage.save();
 
     if (!newMessage || !newMessage._id) {
       res.status(400).json({
@@ -26,6 +25,8 @@ export const storeMessage = async (req: Request, res: Response) => {
 
       return;
     }
+
+    await newMessage.save();
 
     let conversation = await Conversation.findOne({
       members: {
@@ -64,25 +65,16 @@ export const storeMessage = async (req: Request, res: Response) => {
 
 export const getMessages = async (req: Request, res: Response) => {
   try {
-    const senderId = (req as any).user._id;
-    const { id: receiverId } = req.params;
+    const userId = (req as any).user._id;
+    const { id: friendId } = req.params;
 
     const conversation = await Conversation.findOne({
       members: {
-        $all: [senderId, receiverId],
+        $all: [userId, friendId],
       },
     })
       .populate("messages")
       .exec();
-
-    if (!conversation || conversation.messages.length === 0) {
-      res.status(400).json({
-        success: false,
-        message: "Conversation not found",
-      });
-
-      return;
-    }
 
     res.status(200).json({
       success: true,

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, getAllUsers } from "../controllers/user.controller";
+import { registerUser, loginUser, getAllUsers, logout } from "../controllers/user.controller";
 import { verifyUserAccessToken } from "../middlewares/verifyUserAccessToken";
 
 const router = Router();
@@ -10,5 +10,6 @@ router.route("/login").post(loginUser);
 
 // secured routes
 router.route("/getAllUsers").get(verifyUserAccessToken, getAllUsers);
+router.route("/logout").post(verifyUserAccessToken, logout);
 
 export default router;

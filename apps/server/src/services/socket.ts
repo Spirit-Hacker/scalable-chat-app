@@ -3,6 +3,7 @@ dotenv.config();
 import { Server } from "socket.io";
 import Redis from "ioredis";
 import { produceMessage } from "./kafka";
+import User from "../models/user.model";
 
 const pub = new Redis({
   host: process.env.REDIS_AIVEN_HOST,
@@ -40,6 +41,7 @@ class SocketService {
   public initListeners() {
     const io = this.io;
     console.log("Initialize Socket Listeners...");
+    const loggedInUsers: Record<string, string> = {};
 
     io.on("connect", (socket) => {
       console.log(`New Socket Connected ${socket.id}`);
@@ -63,16 +65,36 @@ class SocketService {
             message,
             receiverId,
             senderId,
+            isReceiverOnline: loggedInUsers[receiverId] ? true : false,
           };
           await pub.publish("MESSAGES", JSON.stringify(data));
         }
       );
+
+      socket.on("login", async (userId) => {
+        loggedInUsers[userId] = socket.id;
+      });
+
+      socket.on("disconnect", async () => {
+        console.log(`Socket Disconnected ${socket.id}`);
+        const userId = Object.keys(loggedInUsers).find(
+          (userId) => loggedInUsers[userId] === socket.id
+        );
+        if (userId) {
+          delete loggedInUsers[userId];
+        }
+      });
     });
 
     sub.on("message", async (channel, message) => {
       if (channel === "MESSAGES") {
         console.log("New message received from redis: ", message);
-        io.emit("message", JSON.parse(message).message);
+        if (loggedInUsers[JSON.parse(message).receiverId]) {
+          io.to(loggedInUsers[JSON.parse(message).receiverId]).emit(
+            "message",
+            JSON.parse(message).message
+          );
+        }
 
         // produce message to kafka broker
         produceMessage(message);

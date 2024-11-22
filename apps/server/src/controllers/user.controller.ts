@@ -155,6 +155,7 @@ export const logout = async (req: Request, res: Response) => {
       {
         $unset: {
           refreshToken: 1,
+          isOnline: 1,
         },
       },
       { new: true }
@@ -207,7 +208,7 @@ export const getAllUsers = async (
     const userId = (req as any).user._id;
     // const userId = "673c92f9efaa5f0e4077763b";
 
-    const users = await User.find({ _id: { $ne: userId } });
+    const users = await User.find({ _id: { $ne: userId }, refreshToken: { $ne: null } });
     if (!users) {
       res.status(400).json({
         success: false,
