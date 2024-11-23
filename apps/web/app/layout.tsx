@@ -25,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <SocketProvider>
-        <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} flex items-center justify-center w-[100vw] h-[100vh]`}
+        >
           {children}
         </body>
       </SocketProvider>

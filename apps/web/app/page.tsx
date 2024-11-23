@@ -1,16 +1,19 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useSocket } from "../context/SocketProvider";
 import classes from "./page.module.css";
-import {} from "./utils/first"
 
 const page = () => {
-  const { sendMessage, messages } = useSocket();
+  const { sendMessage, messages, insertCurrentUserIdOnSocketServer } =
+    useSocket();
   const [message, setMessage] = useState("");
+  const [receiverId, setReceiverId] = useState("Receiver ki id");
+  const [senderId, setSenderId] = useState("Sender ki id");
 
   useEffect(() => {
-    console.log(messages);
-  }, [messages]);
+    insertCurrentUserIdOnSocketServer(senderId);
+  }, []);
 
   return (
     <div>
@@ -22,7 +25,7 @@ const page = () => {
       </div>
       <div>
         <input
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setMessage(e.target.value);
           }}
           className={classes["chat-input"]}
@@ -30,7 +33,7 @@ const page = () => {
         />
         <button
           onClick={() => {
-            sendMessage(message);
+            sendMessage(message, receiverId, senderId);
             setMessage("");
           }}
           className={classes["button"]}

@@ -22,8 +22,9 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  background-image: url("../public/backgroundImage.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 * {

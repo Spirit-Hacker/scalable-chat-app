@@ -61,6 +61,7 @@ class SocketService {
             `New message received from ${socket.id}: ${message}, : ${receiverId} : ${senderId}`
           );
           // publish this message to redis
+          // console.log("loggein info", loggedInUsers);
           const data = {
             message,
             receiverId,
@@ -73,6 +74,7 @@ class SocketService {
 
       socket.on("login", async (userId) => {
         loggedInUsers[userId] = socket.id;
+        console.log("loggein info", loggedInUsers);
       });
 
       socket.on("disconnect", async () => {
