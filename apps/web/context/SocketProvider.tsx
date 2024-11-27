@@ -6,9 +6,16 @@ interface SocketProviderProps {
   children?: React.ReactNode;
 }
 
+export interface MessageWS {
+  message: string;
+  senderId: string;
+  receiverId: string;
+  isReceiverOnline?: boolean;
+}
+
 interface ISocketContext {
   sendMessage: (msg: string, receiverId: string, senderId: string) => any;
-  messages: string[];
+  messages: MessageWS[];
   insertCurrentUserIdOnSocketServer: (userId: string) => any;
 }
 
@@ -23,11 +30,12 @@ export const useSocket = () => {
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket>();
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<MessageWS[]>([]);
 
   const sendMessage: ISocketContext["sendMessage"] = useCallback(
     (msg, receiverId, senderId) => {
       console.log("Send Message", msg);
+      if (msg.trim() === "") return;
       if (socket) {
         socket.emit("event:message", {
           message: msg,
@@ -39,15 +47,18 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     [socket]
   );
 
-  const insertCurrentUserIdOnSocketServer = useCallback((userId: string) => {
-    console.log("User to save on socket server: ", userId);
-    if (socket) {
-      console.log("Socket: ", socket);
-      socket.emit("login", userId);
-    }
-  }, [socket]);
+  const insertCurrentUserIdOnSocketServer = useCallback(
+    (userId: string) => {
+      console.log("User to save on socket server: ", userId);
+      if (socket) {
+        console.log("Socket: ", socket);
+        socket.emit("login", userId);
+      }
+    },
+    [socket]
+  );
 
-  const onMessageReceived = useCallback((message: string) => {
+  const onMessageReceived = useCallback((message: MessageWS) => {
     console.log("Message Received from Server: ", message);
     setMessages((prev) => [...prev, message]);
   }, []);
@@ -68,7 +79,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <SocketContext.Provider value={{ sendMessage, messages, insertCurrentUserIdOnSocketServer }}>
+    <SocketContext.Provider
+      value={{ sendMessage, messages, insertCurrentUserIdOnSocketServer }}
+    >
       {children}
     </SocketContext.Provider>
   );

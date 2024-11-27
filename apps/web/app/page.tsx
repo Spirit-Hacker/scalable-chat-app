@@ -17,7 +17,7 @@ const page = () => {
 
   return (
     <div>
-      <div>
+      {/* <div>
         <h1>All messages appear here!!!</h1>
         {messages.map((msg, index) => (
           <p key={index}>{msg}</p>
@@ -40,7 +40,7 @@ const page = () => {
         >
           Send
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

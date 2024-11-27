@@ -2,8 +2,8 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useSocket } from "../../context/SocketProvider";
-import { send } from "process";
+import { MessageWS, useSocket } from "../../context/SocketProvider";
+import Messages from "../components/Messages";
 
 interface User {
   fullName: string;
@@ -19,12 +19,15 @@ interface User {
   updatedAt?: string;
 }
 
-const showUsers = () => {
+const showUsers: React.FC = () => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
-  const [message, setMessage] = useState("");
-  const [senderId, setSenderId] = useState(localStorage.getItem("userId") as string);
+  const [message, setMessage] = useState<string>("");
+  const [senderId, setSenderId] = useState(
+    localStorage.getItem("userId") as string
+  );
   const [receiverId, setReceiverId] = useState("");
-  const { sendMessage, messages, insertCurrentUserIdOnSocketServer } = useSocket();
+  const { sendMessage, messages, insertCurrentUserIdOnSocketServer } =
+    useSocket();
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
@@ -67,7 +70,7 @@ const showUsers = () => {
   return (
     <div className="w-[900px] h-[500px]">
       <div className="h-full flex items-center gap-5 w-full bg-white-900 rounded-md bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-90 border border-gray-100 p-10">
-        <div className="h-full w-[300px] overflow-y-scroll">
+        <div className="h-full w-[25%] overflow-y-scroll">
           {allUsers.map((user, index) => (
             <div
               key={index}
@@ -84,14 +87,16 @@ const showUsers = () => {
         </div>
 
         {receiverId && senderId && (
-          <div className="w-full h-full flex flex-col justify-end">
-            {/* <Messages /> */}
-            <div>
-              {messages.map((msg, index) => (
-                <p key={index}>{msg}</p>
-              ))}
+          <div className="w-[75%] h-full flex flex-col justify-end">
+            <div className="h-[90%] w-full">
+              <Messages
+                messagesWS={messages as MessageWS[]}
+                receiverId={receiverId}
+                senderId={senderId}
+              />
             </div>
-            <div className="flex justify-between h-[50px] gap-5">
+
+            <div className="flex justify-between h-[10%] gap-5">
               <input
                 type="text"
                 className="w-[80%] p-2 bg-transparent border border-gray-100 rounded-md"
@@ -102,7 +107,7 @@ const showUsers = () => {
                 className="bg-blue-500 text-white w-[20%] text-xl font-bold rounded-md hover:bg-blue-600"
                 onClick={(e: React.MouseEvent) => {
                   // e.preventDefault();
-                  sendMessage(message, receiverId, senderId);
+                  sendMessage(message as string, receiverId, senderId);
                   setMessage("");
                 }}
               >

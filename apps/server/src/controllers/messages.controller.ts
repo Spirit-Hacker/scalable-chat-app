@@ -68,13 +68,19 @@ export const getMessages = async (req: Request, res: Response) => {
     const userId = (req as any).user._id;
     const { id: friendId } = req.params;
 
-    const conversation = await Conversation.findOne({
+    let conversation = await Conversation.findOne({
       members: {
         $all: [userId, friendId],
       },
     })
       .populate("messages")
       .exec();
+
+    if (!conversation) {
+      conversation = new Conversation({
+        members: [userId, friendId],
+      });
+    }
 
     res.status(200).json({
       success: true,

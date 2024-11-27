@@ -94,7 +94,13 @@ class SocketService {
         if (loggedInUsers[JSON.parse(message).receiverId]) {
           io.to(loggedInUsers[JSON.parse(message).receiverId]).emit(
             "message",
-            JSON.parse(message).message
+            JSON.parse(message)
+          );
+        }
+        if (loggedInUsers[JSON.parse(message).senderId]) {
+          io.to(loggedInUsers[JSON.parse(message).senderId]).emit(
+            "message",
+            JSON.parse(message)
           );
         }
 
