@@ -1,16 +1,10 @@
 "use client";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { MessageWS } from "../types/messages";
 
 interface SocketProviderProps {
   children?: React.ReactNode;
-}
-
-export interface MessageWS {
-  message: string;
-  senderId: string;
-  receiverId: string;
-  isReceiverOnline?: boolean;
 }
 
 interface ISocketContext {

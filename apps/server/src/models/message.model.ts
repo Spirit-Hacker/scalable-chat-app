@@ -5,6 +5,7 @@ interface Message extends Document {
   sender: Schema.Types.ObjectId;
   receiver: Schema.Types.ObjectId;
   isDelivered: boolean;
+  messageId: string;
 }
 
 const messageSchema = new Schema<Message>(
@@ -26,6 +27,11 @@ const messageSchema = new Schema<Message>(
     isDelivered: {
       type: Boolean,
       default: false,
+    },
+    messageId: {
+      type: String,
+      required: true,
+      unique: true,
     },
   },
   { timestamps: true }

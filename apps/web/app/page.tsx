@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSocket } from "../context/SocketProvider";
+import { useSocket } from "./context/SocketProvider";
 import classes from "./page.module.css";
 
 const page = () => {

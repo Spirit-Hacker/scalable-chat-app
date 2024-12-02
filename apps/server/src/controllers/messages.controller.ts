@@ -5,7 +5,12 @@ import { Schema } from "mongoose";
 
 export const storeMessage = async (req: Request, res: Response) => {
   try {
-    const { senderId, message: messageText, isReceiverOnline } = req.body;
+    const {
+      senderId,
+      message: messageText,
+      isReceiverOnline,
+      messageId,
+    } = req.body;
     const { id: receiverId } = req.params;
 
     // console.log("Inside storeMessage", senderId, messageText, receiverId);
@@ -15,6 +20,7 @@ export const storeMessage = async (req: Request, res: Response) => {
       sender: senderId,
       receiver: receiverId,
       isDelivered: isReceiverOnline,
+      messageId: messageId,
     });
 
     if (!newMessage || !newMessage._id) {

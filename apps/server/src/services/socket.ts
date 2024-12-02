@@ -3,7 +3,7 @@ dotenv.config();
 import { Server } from "socket.io";
 import Redis from "ioredis";
 import { produceMessage } from "./kafka";
-import User from "../models/user.model";
+import { v4 as uuidv4 } from "uuid";
 
 const pub = new Redis({
   host: process.env.REDIS_AIVEN_HOST,
@@ -67,6 +67,7 @@ class SocketService {
             receiverId,
             senderId,
             isReceiverOnline: loggedInUsers[receiverId] ? true : false,
+            messageId: uuidv4()
           };
           await pub.publish("MESSAGES", JSON.stringify(data));
         }

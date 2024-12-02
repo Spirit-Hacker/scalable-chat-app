@@ -3,6 +3,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useSocket } from "../../context/SocketProvider";
+import { login } from "../../services/userServices/auth.service";
 
 interface FormData {
   username: string;
@@ -30,18 +31,7 @@ const page: React.FC = () => {
     e.preventDefault();
     console.log("form submit", formData);
 
-    const response = await axios
-      .post(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/login`, formData, {
-        withCredentials: true,
-      })
-      .then((res) => res.data)
-      .catch((err) => console.log(err));
-
-    console.log("Response: ", response);
-
-    localStorage.setItem("accessToken", response.data.accessToken);
-    localStorage.setItem("refreshToken", response.data.refreshToken);
-    localStorage.setItem("userId", response.data.user._id);
+    const response = await login(formData);
 
     insertCurrentUserIdOnSocketServer(response.data.user._id);
   };

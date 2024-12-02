@@ -2,28 +2,15 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-
-interface MessageWS {
-  message: string;
-  senderId: string;
-  receiverId: string;
-  isReceiverOnline?: boolean;
-}
+import { MessageWS } from "../../../types/messages";
+import { createMessageMap } from "../../../utils/createMessageMap";
+import { Message } from "../../../types/messages";
+import { getMessagesInThisConversation } from "../../../services/messageServices/message.service";
 
 interface MessagesProps {
   messagesWS: MessageWS[];
   senderId: string;
   receiverId: string;
-}
-
-interface Message {
-  _id: string;
-  content: string;
-  isDelivered: boolean;
-  sender: string;
-  receiver: string;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 const Messages: React.FC<MessagesProps> = ({
@@ -32,23 +19,38 @@ const Messages: React.FC<MessagesProps> = ({
   receiverId,
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const fetchMessages = async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/messages/getAllMessages/${receiverId}`,
-      {
-        headers: {
-          Authorization: localStorage.getItem("accessToken"),
-        },
-      }
-    );
+  // to uniquely identify each message
+  const [existingMessages, setExistingMessages] = useState<
+    Record<string, Message>
+  >({});
 
-    console.log("Messages: ", response.data.data.conversation?.messages);
+  const isRelevantMessage = (msg: MessageWS) => {
+    return (
+      ((msg.senderId === senderId && msg.receiverId === receiverId) ||
+        (msg.senderId === receiverId && msg.receiverId === senderId)) &&
+      !existingMessages[msg.messageId]
+    );
+  };
+
+  const fetchMessages = async () => {
+    const response = await getMessagesInThisConversation(receiverId);
+
+    console.log(
+      "Messages from DB: ",
+      response.data.data.conversation?.messages
+    );
     setMessages(response.data.data.conversation?.messages);
   };
 
   useEffect(() => {
     fetchMessages();
   }, [receiverId, senderId]);
+
+  useEffect(() => {
+    const messageMap = createMessageMap(messages);
+    setExistingMessages(messageMap);
+    console.log("Existing messages: ", existingMessages);
+  }, [messages]);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 rounded-md shadow-md h-[90%] w-full">
@@ -75,9 +77,7 @@ const Messages: React.FC<MessagesProps> = ({
         <div className={`flex flex-col gap-1 w-full`}>
           {messagesWS.map(
             (msg, index) =>
-              ((msg.senderId === senderId && msg.receiverId === receiverId) ||
-                (msg.senderId === receiverId &&
-                  msg.receiverId === senderId)) && (
+              isRelevantMessage(msg) && (
                 <div
                   className={`max-w-[full] p-1 rounded-lg flex flex-col ${
                     msg.senderId === senderId ? "items-end" : "items-start"

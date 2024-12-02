@@ -5,7 +5,6 @@ import { Kafka, Producer } from "kafkajs";
 import fs from "fs";
 import path from "path";
 import connectDB from "./db";
-import Message from "../models/message.model";
 import axios from "axios";
 
 const kafka = new Kafka({
@@ -69,6 +68,7 @@ export async function startMessageConsumer() {
             {
               message: data.message,
               senderId: data.senderId,
+              messageId: data.messageId
             }
           )
           .then((res) => res.data)

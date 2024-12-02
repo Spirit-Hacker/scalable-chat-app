@@ -1,23 +1,11 @@
 "use client";
 
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { MessageWS, useSocket } from "../../context/SocketProvider";
-import Messages from "../components/Messages";
-
-interface User {
-  fullName: string;
-  username: string;
-  email: string;
-  _id: string;
-  password?: string;
-  messages?: string[];
-  isOnline?: boolean;
-  createdAt?: string;
-  refreshToken?: string;
-  accessToken?: string;
-  updatedAt?: string;
-}
+import { useSocket } from "../../context/SocketProvider";
+import Messages from "./components/Messages";
+import { User } from "../../types/user";
+import { MessageWS } from "../../types/messages";
+import { showAllUsers } from "../../services/userServices/auth.service";
 
 const showUsers: React.FC = () => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -41,12 +29,7 @@ const showUsers: React.FC = () => {
   }, []);
 
   const fetchUsers = async () => {
-    const res = await axios
-      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getAllUsers`, {
-        headers: { Authorization: localStorage.getItem("accessToken") },
-      })
-      .then((res) => res.data)
-      .catch((err) => console.log(err));
+    const res = await showAllUsers();
 
     console.log("all Users", res);
     setAllUsers(res.data);

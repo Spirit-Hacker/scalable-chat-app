@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios";
+import { signUp } from "../../services/userServices/auth.service";
 
 interface FormData {
   fullName: string;
@@ -31,12 +31,7 @@ const page: React.FC = () => {
     e.preventDefault();
     console.log("form submit", formData);
 
-    const response = await axios
-      .post(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/register`, formData, {
-        withCredentials: true,
-      })
-      .then((res) => res.data)
-      .catch((err) => console.log(err));
+    const response = await signUp(formData);
 
     console.log("Response: ", response);
   };
