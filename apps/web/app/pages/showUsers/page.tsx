@@ -10,9 +10,7 @@ import { showAllUsers } from "../../services/userServices/auth.service";
 const showUsers: React.FC = () => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [message, setMessage] = useState<string>("");
-  const [senderId, setSenderId] = useState(
-    localStorage.getItem("userId") as string
-  );
+  const [senderId, setSenderId] = useState<string>("");
   const [receiverId, setReceiverId] = useState("");
   const { sendMessage, messages, insertCurrentUserIdOnSocketServer } =
     useSocket();

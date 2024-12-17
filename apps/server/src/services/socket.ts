@@ -6,17 +6,13 @@ import { produceMessage } from "./kafka";
 import { v4 as uuidv4 } from "uuid";
 
 const pub = new Redis({
-  host: process.env.REDIS_AIVEN_HOST,
-  port: parseInt(process.env.REDIS_AIVEN_PORT || "0", 10),
-  username: process.env.REDIS_AIVEN_USERNAME,
-  password: process.env.REDIS_AIVEN_PASSWORD,
+  host: process.env.REDIS_HOST,
+  port: parseInt(process.env.REDIS_PORT || "0", 10)
 });
 
 const sub = new Redis({
-  host: process.env.REDIS_AIVEN_HOST,
-  port: parseInt(process.env.REDIS_AIVEN_PORT || "0", 10),
-  username: process.env.REDIS_AIVEN_USERNAME,
-  password: process.env.REDIS_AIVEN_PASSWORD,
+  host: process.env.REDIS_HOST,
+  port: parseInt(process.env.REDIS_PORT || "0", 10)
 });
 
 class SocketService {

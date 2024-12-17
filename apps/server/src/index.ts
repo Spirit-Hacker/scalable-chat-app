@@ -5,6 +5,7 @@ import http from "http";
 import SocketService from "./services/socket";
 import { startMessageConsumer } from "./services/kafka";
 import { app } from "./app";
+import connectDB from "./services/db";
 
 function init() {
   startMessageConsumer();
@@ -16,6 +17,7 @@ function init() {
   socketService.io.attach(httpServer);
 
   httpServer.listen(PORT, async() => {
+    await connectDB();
     console.log(`Server running on PORT: ${PORT}`);
   });
 

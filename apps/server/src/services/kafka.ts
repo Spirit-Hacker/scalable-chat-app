@@ -2,21 +2,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { Kafka, Producer } from "kafkajs";
-import fs from "fs";
-import path from "path";
-import connectDB from "./db";
 import axios from "axios";
 
 const kafka = new Kafka({
   brokers: [process.env.KAFKA_HOST || ""],
-  ssl: {
-    ca: [fs.readFileSync(path.resolve("./ca.pem"), "utf-8")],
-  },
-  sasl: {
-    username: process.env.KAFKA_USERNAME || "",
-    password: process.env.KAFKA_PASSWORD || "",
-    mechanism: "plain",
-  },
 });
 
 let producer: null | Producer = null;
@@ -45,7 +34,6 @@ export async function produceMessage(message: string) {
 
 export async function startMessageConsumer() {
   console.log("Consumer is running...");
-  await connectDB();
 
   const consumer = kafka.consumer({ groupId: "default" });
   await consumer.connect();
@@ -68,7 +56,7 @@ export async function startMessageConsumer() {
             {
               message: data.message,
               senderId: data.senderId,
-              messageId: data.messageId
+              messageId: data.messageId,
             }
           )
           .then((res) => res.data)
