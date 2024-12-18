@@ -18,7 +18,7 @@ export const login = async (formData: any) => {
       withCredentials: true,
     })
     .then((res) => res.data)
-    .catch((err) => console.log(err));
+    .catch((err) => err);
 
   console.log("Response: ", response);
 

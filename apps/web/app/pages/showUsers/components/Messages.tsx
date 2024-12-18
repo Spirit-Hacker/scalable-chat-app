@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MessageWS } from "../../../types/messages";
 import { createMessageMap } from "../../../utils/createMessageMap";
 import { Message } from "../../../types/messages";
@@ -24,6 +24,15 @@ const Messages: React.FC<MessagesProps> = ({
     Record<string, Message>
   >({});
 
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Function to scroll to the bottom
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
+
   const isRelevantMessage = (msg: MessageWS) => {
     return (
       ((msg.senderId === senderId && msg.receiverId === receiverId) ||
@@ -31,6 +40,10 @@ const Messages: React.FC<MessagesProps> = ({
       !existingMessages[msg.messageId]
     );
   };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messagesWS]);
 
   const fetchMessages = async () => {
     const response = await getMessagesInThisConversation(receiverId);
@@ -50,21 +63,22 @@ const Messages: React.FC<MessagesProps> = ({
     const messageMap = createMessageMap(messages);
     setExistingMessages(messageMap);
     console.log("Existing messages: ", existingMessages);
+    scrollToBottom();
   }, [messages]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 rounded-md shadow-md h-[90%] w-full">
+    <div ref={chatContainerRef} className="flex-1 flex-grow overflow-y-auto p-4 rounded-md shadow-md h-[90%] w-full [&::-webkit-scrollbar]:hidden">
       {messages.length > 0 && (
         <div className={`flex flex-col gap-1 w-full`}>
           {messages.map((msg, index) => (
             <div
-              className={`max-w-[full] p-1 rounded-lg flex flex-col ${
+              className={`max-w-full p-1 rounded-lg flex flex-col ${
                 msg.sender === senderId ? "items-end" : "items-start"
               }`}
               key={index}
             >
               <div
-                className={`p-1 text-white rounded-md ${msg.sender === senderId ? "bg-blue-600" : "bg-gray-600"}`}
+                className={`p-1 max-w-[50%] text-white rounded-md ${msg.sender === senderId ? "bg-blue-600" : "bg-gray-600"}`}
               >
                 {msg.content}
               </div>
