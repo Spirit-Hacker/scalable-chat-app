@@ -29,7 +29,8 @@ const Messages: React.FC<MessagesProps> = ({
   // Function to scroll to the bottom
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   };
 
@@ -67,18 +68,26 @@ const Messages: React.FC<MessagesProps> = ({
   }, [messages]);
 
   return (
-    <div ref={chatContainerRef} className="flex-1 flex-grow overflow-y-auto p-4 rounded-md shadow-md h-[90%] w-full [&::-webkit-scrollbar]:hidden">
+    <div
+      ref={chatContainerRef}
+      className="flex-1 overflow-y-auto p-4 h-full max-w-full [&::-webkit-scrollbar]:hidden"
+    >
       {messages.length > 0 && (
         <div className={`flex flex-col gap-1 w-full`}>
           {messages.map((msg, index) => (
             <div
-              className={`max-w-full p-1 rounded-lg flex flex-col ${
+              className={`w-full p-1 rounded-lg flex flex-col ${
                 msg.sender === senderId ? "items-end" : "items-start"
               }`}
               key={index}
             >
               <div
-                className={`p-1 max-w-[50%] text-white rounded-md ${msg.sender === senderId ? "bg-blue-600" : "bg-gray-600"}`}
+                className={`p-1 break-words max-w-[50%] rounded-3xl pl-5 pr-5 shadow-gray-200 shadow-md ${msg.sender === senderId ? "bg-purple-500 text-white" : "bg-white text-black"}`}
+                style={{
+                  wordBreak: "break-word", // Ensures words break if too long
+                  overflowWrap: "break-word", // Ensures long strings break
+                  whiteSpace: "wrap",
+                }}
               >
                 {msg.content}
               </div>
@@ -99,7 +108,12 @@ const Messages: React.FC<MessagesProps> = ({
                   key={index}
                 >
                   <div
-                    className={`p-1 text-white rounded-md ${msg.senderId === senderId ? "bg-blue-600" : "bg-gray-600"}`}
+                    className={`p-1 break-words max-w-[50%] rounded-3xl pl-5 pr-5 shadow-gray-200 shadow-md ${msg.senderId === senderId ? "bg-purple-500 text-white" : "bg-white text-black"}`}
+                    style={{
+                      wordBreak: "break-word", // Ensures words break if too long
+                      overflowWrap: "break-word", // Ensures long strings break
+                      whiteSpace: "wrap",
+                    }}
                   >
                     {msg.message}
                   </div>

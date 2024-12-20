@@ -1,5 +1,45 @@
 import axios from "axios";
-import { GET_ALL_USERS_API, LOGIN_API, SIGN_UP_API } from "../apis";
+import { GET_ALL_USERS_API, LOGIN_API, SIGN_UP_API, REFRESH_ACCESS_TOKEN } from "../apis";
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
+});
+
+api.interceptors.response.use(
+  (response) => {
+    console.log("Interceptor response", response);
+    return response;
+  },
+  async (error) => {
+    console.log("Interceptor error", error);
+    if (error.response.status === 401) {
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+        console.log("refreshToken: ", refreshToken);
+        if (!refreshToken) {
+          throw new Error("No refresh token found");
+        }
+
+        const response = await axios.post(REFRESH_ACCESS_TOKEN, {}, {
+          headers: {
+            Authorization: refreshToken,
+          }
+        });
+
+        console.log("Response for Refresh Access Token: ", response);
+
+        const { accessToken } = response.data.data;
+        localStorage.setItem("accessToken", accessToken);
+
+        error.config.headers.Authorization = accessToken;
+        return api.request(error.config);
+      } catch (error) {
+        console.log("Error refreshing token: ", error);
+        return Promise.reject(error);
+      }
+    }
+  }
+);
 
 export const signUp = async (formData: any) => {
   const response = await axios
@@ -30,14 +70,19 @@ export const login = async (formData: any) => {
 };
 
 export const showAllUsers = async () => {
-  const response = await axios
-    .get(GET_ALL_USERS_API, {
-      headers: { Authorization: localStorage.getItem("accessToken") },
-    })
-    .then((res) => res.data)
-    .catch((err) => console.log(err));
+  try {
+    const response = await api
+      .get(GET_ALL_USERS_API, {
+        headers: { Authorization: localStorage.getItem("accessToken") },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.log("All Users Error: ", err);
+        return err;
+      });
 
-  console.log("all Users", response);
-
-  return response;
+    return response.data;
+  } catch (error) {
+    return null;
+  }
 };

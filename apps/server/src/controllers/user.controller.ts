@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import User from "../models/user.model";
 import bcrypt from "bcrypt";
+import jwt, { JwtPayload } from "jsonwebtoken";
+
+interface refreshTokenPayload extends JwtPayload {
+  _id: string;
+}
 
 const generateAccessAndRefreshToken = async (userId: string) => {
   const user = await User.findById(userId);
@@ -147,6 +152,72 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const refreshAccessToken = async (req: Request, res: Response) => {
+  try {
+    const refreshToken = req.headers.authorization;
+
+    console.log("Req Headers: ", req.headers);
+
+    if (!refreshToken) {
+      res.status(400).json({
+        success: false,
+        message: "Refresh token is required.",
+      });
+      return;
+    }
+
+    const decodedRefreshToken = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET || ""
+    ) as refreshTokenPayload;
+
+    if (!decodedRefreshToken || !decodedRefreshToken._id) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid refresh token.",
+      });
+      return;
+    }
+
+    const user = await User.findById(decodedRefreshToken._id);
+
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "User not found.",
+      });
+      return;
+    }
+
+    const accessToken = user.generateAccessToken();
+
+    if (!accessToken) {
+      res.status(400).json({
+        success: false,
+        message: "Failed to generate access token.",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Access token refreshed successfully.",
+      data: {
+        accessToken,
+      },
+    });
+
+    return;
+  } catch (error: Error | any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+    return;
+  }
+};
+
 export const logout = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
@@ -206,9 +277,12 @@ export const getAllUsers = async (
 ): Promise<void> => {
   try {
     const userId = (req as any).user._id;
-    // const userId = "673c92f9efaa5f0e4077763b";
 
-    const users = await User.find({ _id: { $ne: userId }, refreshToken: { $ne: null } });
+    const users = await User.find({
+      _id: { $ne: userId },
+      refreshToken: { $ne: null },
+    });
+    
     if (!users) {
       res.status(400).json({
         success: false,

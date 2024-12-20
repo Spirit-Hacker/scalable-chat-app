@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import User from "../models/user.model";
 
-interface CustomeJwtPayload extends JwtPayload {
+interface accessTokenPayload extends JwtPayload {
   _id: string;
   email: string;
   username: string;
@@ -20,7 +20,7 @@ export const verifyUserAccessToken = async (
     if (!accessToken) {
       res.status(401).json({
         success: false,
-        message: "Unauthorized - noaccess token provided",
+        message: "Unauthorized - no access token provided",
       });
 
       return;
@@ -29,7 +29,7 @@ export const verifyUserAccessToken = async (
     const decodedAccessToken = jwt.verify(
       accessToken,
       process.env.ACCESS_TOKEN_SECRET || ""
-    ) as CustomeJwtPayload;
+    ) as accessTokenPayload;
 
     if (!decodedAccessToken || !decodedAccessToken._id) {
       res.status(400).json({

@@ -72,6 +72,7 @@ class SocketService {
       socket.on("login", async (userId) => {
         loggedInUsers[userId] = socket.id;
         console.log("loggein info", loggedInUsers);
+        io.emit("users:online", Object.keys(loggedInUsers));
       });
 
       socket.on("disconnect", async () => {
@@ -82,6 +83,7 @@ class SocketService {
         if (userId) {
           delete loggedInUsers[userId];
         }
+        io.emit("users:online", Object.keys(loggedInUsers));
       });
     });
 
