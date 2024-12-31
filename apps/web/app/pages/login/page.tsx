@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useSocket } from "../../context/SocketProvider";
 import { login } from "../../services/userServices/auth.service";
 import { Toast } from "chaddi-ui";
-import Link from "next/link";
 
 interface FormData {
   username: string;
@@ -38,7 +37,7 @@ const page: React.FC = () => {
       const response = await login(formData);
 
       if (response.success) {
-        window.location.href = "/pages/showUsers";
+        window.location.href = "/";
         setLoginStatus("Success");
         insertCurrentUserIdOnSocketServer(response.data.user._id);
       }
@@ -48,7 +47,7 @@ const page: React.FC = () => {
     }
   };
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-full h-full flex items-center justify-center bg-[#040019]">
       {loginStatus && (
         <div className="fixed top-10 right-44">
           <Toast
@@ -56,75 +55,43 @@ const page: React.FC = () => {
               loginStatus === "Success" ? "Login Success" : "Login Failed"
             }
             animation="slide"
-            color={loginStatus === "Success" ? "green" : "red"}
+            color={loginStatus === "Success" ? "#DBFC7E" : "red"}
             duration={3000}
             position="top-right"
           />
         </div>
       )}
-      <div className="w-[500px] h-[500px] flex items-center justify-center">
-        <div className="h-full w-full rounded-md bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-90 border border-gray-100 p-10">
-          <form
-            onSubmit={handleSubmit}
-            style={{ maxWidth: "400px", margin: "auto" }}
-          >
-            <div style={{ marginBottom: "15px" }}>
-              <label
-                htmlFor="username"
-                style={{ display: "block", marginBottom: "5px" }}
-              >
-                Username
-              </label>
+      <div className="flex items-center justify-center min-h-screen w-full bg-[#040019]">
+        <div className="bg-[#110D24] p-8 rounded-3xl shadow-xl w-80 text-center">
+          <h1 className="text-2xl font-bold text-[#DBFC7E]">LOGIN</h1>
+          <p className="text-sm text-gray-500 mb-6">TO CONTINUE</p>
+          <form onSubmit={handleSubmit}>
+            <div className="flex items-center mb-4 bg-[#110D24] p-2 rounded-lg">
+              <span className="text-lg mr-2">&#x1F464;</span>
               <input
-                type="text"
-                id="username"
                 name="username"
-                value={formData.username}
+                type="username"
+                placeholder="Enter username"
+                className="bg-transparent text-white focus:outline-none flex-1"
                 onChange={handleChange}
-                required
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  boxSizing: "border-box",
-                }}
               />
             </div>
-
-            <div style={{ marginBottom: "15px" }}>
-              <label
-                htmlFor="password"
-                style={{ display: "block", marginBottom: "5px" }}
-              >
-                Password
-              </label>
+            <div className="flex items-center mb-6 bg-[#110D24] p-2 rounded-lg">
+              <span className="text-lg mr-2">&#x1F512;</span>
               <input
-                type="password"
-                id="password"
                 name="password"
-                value={formData.password}
+                type="password"
+                placeholder="Enter password"
+                className="bg-transparent text-white focus:outline-none flex-1"
                 onChange={handleChange}
-                required
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  boxSizing: "border-box",
-                }}
               />
             </div>
 
             <button
               type="submit"
-              style={{
-                width: "100%",
-                padding: "10px",
-                backgroundColor: "#007BFF",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
+              className="w-full bg-[#DBFC7E] text-black py-2 rounded-lg font-semibold"
             >
-              Submit
+              LOGIN
             </button>
           </form>
         </div>

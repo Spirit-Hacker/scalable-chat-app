@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { registerUser, loginUser, getAllUsers, logout, refreshAccessToken } from "../controllers/user.controller";
-import { verifyUserAccessToken } from "../middlewares/verifyUserAccessToken";
+import { registerUser, loginUser, getAllUsers, logout, refreshAccessToken, uploadProfilePicture } from "../controllers/user.controller";
+import { verifyUserAccessToken } from "../middlewares/auth.middleware";
+import { upload } from "../middlewares/multer.middleware";
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.route("/login").post(loginUser);
 router.route("/getAllUsers").get(verifyUserAccessToken, getAllUsers);
 router.route("/logout").post(verifyUserAccessToken, logout);
 router.route("/refreshAccessToken").post(refreshAccessToken);
+// router.route("/uploadPicture").post(upload.single("profilePhoto"), uploadProfilePicture);
 
 export default router;

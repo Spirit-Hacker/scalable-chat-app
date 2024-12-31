@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyUserAccessToken } from "../middlewares/verifyUserAccessToken";
+import { verifyUserAccessToken } from "../middlewares/auth.middleware";
 import { getMessages, storeMessage } from "../controllers/messages.controller";
 
 const router = Router();

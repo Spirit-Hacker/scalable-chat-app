@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import User from "../models/user.model";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { uploadOnCloudinary } from "../utils/cloudinary";
 
 interface refreshTokenPayload extends JwtPayload {
   _id: string;
@@ -282,7 +283,7 @@ export const getAllUsers = async (
       _id: { $ne: userId },
       refreshToken: { $ne: null },
     });
-    
+
     if (!users) {
       res.status(400).json({
         success: false,
@@ -295,6 +296,59 @@ export const getAllUsers = async (
       success: true,
       message: "Users fetched successfully.",
       data: users,
+    });
+
+    return;
+  } catch (error: Error | any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+    return;
+  }
+};
+
+export const uploadProfilePicture = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.body;
+
+    if (!req.file || !req.file.path) {
+      res.status(400).json({
+        success: false,
+        message: "No file uploaded.",
+      });
+      return;
+    }
+
+    const profilePicture = await uploadOnCloudinary(req.file.path);
+
+    if (!profilePicture) {
+      res.status(400).json({
+        success: false,
+        message: "Failed to upload profile picture.",
+      });
+      return;
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { profilePicture: profilePicture.secure_url },
+      { new: true }
+    );
+
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "User not found.",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile picture uploaded successfully.",
+      data: user,
     });
 
     return;

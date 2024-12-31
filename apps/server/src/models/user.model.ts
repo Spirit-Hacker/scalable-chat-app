@@ -9,6 +9,7 @@ export interface IUser extends Document {
   password: string;
   messages: Message[];
   isOnline: boolean;
+  profilePicture: string;
   refreshToken: string;
   generateAccessToken: () => string;
   generateRefreshToken: () => string;
@@ -41,6 +42,12 @@ const userSchema = new Schema<IUser>(
     isOnline: {
       type: Boolean,
       default: false,
+    },
+    profilePicture: {
+      type: String,
+      default:
+        "https://t4.ftcdn.net/jpg/10/75/86/19/360_F_1075861908_Q2ZBfVQNvMSSzbZJCXwfu5Ew5CcfelrG.jpg",
+      trim: true,
     },
     messages: [
       {

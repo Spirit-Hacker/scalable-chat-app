@@ -1,5 +1,10 @@
 import axios from "axios";
-import { GET_ALL_USERS_API, LOGIN_API, SIGN_UP_API, REFRESH_ACCESS_TOKEN } from "../apis";
+import {
+  GET_ALL_USERS_API,
+  LOGIN_API,
+  SIGN_UP_API,
+  REFRESH_ACCESS_TOKEN,
+} from "../apis";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
@@ -17,14 +22,19 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem("refreshToken");
         console.log("refreshToken: ", refreshToken);
         if (!refreshToken) {
+          window.location.href = "/pages/login";
           throw new Error("No refresh token found");
         }
 
-        const response = await axios.post(REFRESH_ACCESS_TOKEN, {}, {
-          headers: {
-            Authorization: refreshToken,
+        const response = await axios.post(
+          REFRESH_ACCESS_TOKEN,
+          {},
+          {
+            headers: {
+              Authorization: refreshToken,
+            },
           }
-        });
+        );
 
         console.log("Response for Refresh Access Token: ", response);
 

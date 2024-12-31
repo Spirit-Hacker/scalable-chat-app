@@ -16,7 +16,7 @@ function init() {
 
   socketService.io.attach(httpServer);
 
-  httpServer.listen(PORT, async() => {
+  httpServer.listen(PORT, async () => {
     await connectDB();
     console.log(`Server running on PORT: ${PORT}`);
   });

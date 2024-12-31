@@ -25,7 +25,7 @@ const page: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // console.log("form change", name, value);
+    console.log("form change", name, value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -50,8 +50,9 @@ const page: React.FC = () => {
       console.log("Error registering: ", error);
     }
   };
+
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-full h-full flex items-center justify-center bg-[#040019]">
       {registerStatus && (
         <div className="fixed top-10 right-44">
           <Toast
@@ -61,119 +62,62 @@ const page: React.FC = () => {
                 : "Registeration Failed"
             }
             animation="slide"
-            color={registerStatus === "Success" ? "green" : "red"}
+            color={registerStatus === "Success" ? "#DBFC7E" : "red"}
             duration={3000}
             position="top-right"
           />
         </div>
       )}
-      <div className="w-[500px] h-[500px]">
-        <div className="h-full w-full bg-white-900 rounded-md bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-90 border border-gray-100 p-10">
-          <form
-            onSubmit={handleSubmit}
-            style={{ maxWidth: "400px", margin: "auto" }}
-          >
-            <div style={{ marginBottom: "15px" }}>
-              <label
-                htmlFor="fullName"
-                style={{ display: "block", marginBottom: "5px" }}
-              >
-                Full Name
-              </label>
+      <div className="flex items-center justify-center min-h-screen w-full bg-[#040019]">
+        <div className="bg-[#110D24] p-8 rounded-3xl shadow-xl w-80 text-center">
+          <h1 className="text-2xl font-bold text-[#DBFC7E]">SIGN UP</h1>
+          <p className="text-sm text-gray-500 mb-6">TO CREATE YOUR ACCOUNT</p>
+          <form onSubmit={handleSubmit}>
+            <div className="flex items-center mb-4 bg-[#110D24] p-2 rounded-lg text-white">
+              <span className="bg-[#110D24] text-lg mr-2">&#x1F464;</span>
               <input
-                type="text"
-                id="fullName"
                 name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                required
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  boxSizing: "border-box",
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "15px" }}>
-              <label
-                htmlFor="username"
-                style={{ display: "block", marginBottom: "5px" }}
-              >
-                Username
-              </label>
-              <input
                 type="text"
-                id="username"
+                placeholder="Enter Your Name"
+                className="bg-transparent focus:outline-none flex-1 bg-[#110D24] text-white"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="flex items-center mb-4 bg-[#110D24] p-2 rounded-lg">
+              <span className="bg-[#110D24] text-lg mr-2">&#x1F464;</span>
+              <input
                 name="username"
-                value={formData.username}
+                type="text"
+                placeholder="Enter username"
+                className="bg-transparent focus:outline-none flex-1 bg-[#110D24] text-white"
                 onChange={handleChange}
-                required
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  boxSizing: "border-box",
-                }}
               />
             </div>
-
-            <div style={{ marginBottom: "15px" }}>
-              <label
-                htmlFor="email"
-                style={{ display: "block", marginBottom: "5px" }}
-              >
-                Email
-              </label>
+            <div className="flex items-center mb-4 bg-[#110D24] p-2 rounded-lg gap-2">
+              <span className="text-gray-400 text-lg mr-1 ml-1">&#x2709;</span>
               <input
-                type="email"
-                id="email"
                 name="email"
-                value={formData.email}
+                type="email"
+                placeholder="Enter email"
+                className="bg-transparent focus:outline-none flex-1 text-white"
                 onChange={handleChange}
-                required
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  boxSizing: "border-box",
-                }}
               />
             </div>
-
-            <div style={{ marginBottom: "15px" }}>
-              <label
-                htmlFor="password"
-                style={{ display: "block", marginBottom: "5px" }}
-              >
-                Password
-              </label>
+            <div className="flex items-center mb-6 bg-[#110D24] p-2 rounded-lg">
+              <span className="text-gray-400 text-lg mr-2">&#x1F512;</span>
               <input
-                type="password"
-                id="password"
                 name="password"
-                value={formData.password}
+                type="password"
+                placeholder="Enter password"
+                className="bg-transparent focus:outline-none flex-1 text-white"
                 onChange={handleChange}
-                required
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  boxSizing: "border-box",
-                }}
               />
             </div>
-
             <button
               type="submit"
-              style={{
-                width: "100%",
-                padding: "10px",
-                backgroundColor: "#007BFF",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
+              className="w-full bg-[#DBFC7E] text-black py-2 rounded-lg font-semibold"
             >
-              Submit
+              SIGN UP
             </button>
           </form>
         </div>
