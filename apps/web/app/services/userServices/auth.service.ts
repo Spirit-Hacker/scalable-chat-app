@@ -4,6 +4,7 @@ import {
   LOGIN_API,
   SIGN_UP_API,
   REFRESH_ACCESS_TOKEN,
+  LOGOUT_API,
 } from "../apis";
 
 const api = axios.create({
@@ -17,7 +18,7 @@ api.interceptors.response.use(
   },
   async (error) => {
     console.log("Interceptor error", error);
-    if (error.response.status === 401) {
+    if (error.response.status !== 200) {
       try {
         const refreshToken = localStorage.getItem("refreshToken");
         console.log("refreshToken: ", refreshToken);
@@ -45,6 +46,7 @@ api.interceptors.response.use(
         return api.request(error.config);
       } catch (error) {
         console.log("Error refreshing token: ", error);
+        window.location.href = "/pages/login";
         return Promise.reject(error);
       }
     }
@@ -85,7 +87,7 @@ export const showAllUsers = async () => {
       .get(GET_ALL_USERS_API, {
         headers: { Authorization: localStorage.getItem("accessToken") },
       })
-      .then((res) => res.data)
+      .then((res) => res?.data)
       .catch((err) => {
         console.log("All Users Error: ", err);
         return err;
@@ -94,5 +96,30 @@ export const showAllUsers = async () => {
     return response.data;
   } catch (error) {
     return null;
+  }
+};
+
+export const logOut = async (userId: string) => {
+  try {
+    console.log("Logout userId: ", userId);
+    const response = await axios.post(
+      LOGOUT_API,
+      {userId: userId},
+      {
+        headers: {
+          Authorization: localStorage.getItem("accessToken"),
+        },
+      }
+    );
+
+    console.log("Logout Response: ", response);
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userId");
+
+    window.location.href = "/pages/login";
+  } catch (error) {
+    console.log("Logout Error: ", error);
   }
 };

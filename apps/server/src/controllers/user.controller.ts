@@ -3,6 +3,7 @@ import User from "../models/user.model";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { uploadOnCloudinary } from "../utils/cloudinary";
+import { Schema } from "mongoose";
 
 interface refreshTokenPayload extends JwtPayload {
   _id: string;
@@ -221,9 +222,10 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
+    const userId = (req as any).body.userId;
+    console.log("User Id: ", userId);
     const user = await User.findByIdAndUpdate(
-      { userId },
+      userId,
       {
         $unset: {
           refreshToken: 1,
@@ -280,7 +282,6 @@ export const getAllUsers = async (
     const userId = (req as any).user._id;
 
     const users = await User.find({
-      _id: { $ne: userId },
       refreshToken: { $ne: null },
     });
 

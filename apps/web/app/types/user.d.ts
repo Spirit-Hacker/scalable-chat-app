@@ -10,4 +10,5 @@ export interface User {
   refreshToken?: string;
   accessToken?: string;
   updatedAt?: string;
+  profilePicture: string;
 }

@@ -13,6 +13,6 @@ router.route("/login").post(loginUser);
 router.route("/getAllUsers").get(verifyUserAccessToken, getAllUsers);
 router.route("/logout").post(verifyUserAccessToken, logout);
 router.route("/refreshAccessToken").post(refreshAccessToken);
-// router.route("/uploadPicture").post(upload.single("profilePhoto"), uploadProfilePicture);
+router.route("/uploadPicture").post(upload.single("profilePhoto"), uploadProfilePicture);
 
 export default router;

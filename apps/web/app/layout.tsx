@@ -27,9 +27,8 @@ export default function RootLayout({
     <html lang="en">
       <SocketProvider>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} flex flex-col items-center justify-center w-[100vw] h-[100vh]`}
+          className={`${geistSans.variable} ${geistMono.variable} w-[100vw] h-[100vh]`}
         >
-          <Navbar />
           {children}
         </body>
       </SocketProvider>

@@ -47,7 +47,7 @@ const page: React.FC = () => {
     }
   };
   return (
-    <div className="w-full h-full flex items-center justify-center bg-[#040019]">
+    <div className="w-full h-[93%] flex items-center justify-center bg-[#040019]">
       {loginStatus && (
         <div className="fixed top-10 right-44">
           <Toast
