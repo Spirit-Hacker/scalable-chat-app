@@ -5,6 +5,7 @@ import {
   SIGN_UP_API,
   REFRESH_ACCESS_TOKEN,
   LOGOUT_API,
+  UPLOAD_PROFILE_PICTURE_API,
 } from "../apis";
 
 const api = axios.create({
@@ -123,3 +124,21 @@ export const logOut = async (userId: string) => {
     console.log("Logout Error: ", error);
   }
 };
+
+export const uploadProfilePicture = async (Image: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("profilePhoto", Image);
+
+    const response = await axios.post(UPLOAD_PROFILE_PICTURE_API, formData, {
+      headers: {
+        Authorization: localStorage.getItem("accessToken"),
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log("Error uploading profile picture: ", error);
+  }
+}

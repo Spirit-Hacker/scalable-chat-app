@@ -117,6 +117,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     );
 
     user.refreshToken = refreshToken;
+    user.isOnline = true;
     await user.save();
 
     res
@@ -281,9 +282,7 @@ export const getAllUsers = async (
   try {
     const userId = (req as any).user._id;
 
-    const users = await User.find({
-      refreshToken: { $ne: null },
-    });
+    const users = await User.find();
 
     if (!users) {
       res.status(400).json({
@@ -292,6 +291,8 @@ export const getAllUsers = async (
       });
       return;
     }
+
+    // console.log("Users: ", users);
 
     res.status(200).json({
       success: true,
@@ -312,7 +313,9 @@ export const getAllUsers = async (
 
 export const uploadProfilePicture = async (req: Request, res: Response) => {
   try {
-    const { id } = req.body;
+    const { _id : userId } = (req as any).user;
+    console.log("Uploader Id: ", userId);
+    console.log("Req File: ", req.files);
 
     if (!req.file || !req.file.path) {
       res.status(400).json({
@@ -333,7 +336,7 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
     }
 
     const user = await User.findByIdAndUpdate(
-      id,
+      userId,
       { profilePicture: profilePicture.secure_url },
       { new: true }
     );

@@ -17,6 +17,8 @@ export const verifyUserAccessToken = async (
   try {
     const accessToken = req.headers.authorization;
 
+    // console.log("Access Token: ", accessToken);
+
     if (!accessToken) {
       res.status(401).json({
         success: false,
@@ -43,6 +45,8 @@ export const verifyUserAccessToken = async (
     const user = await User.findById(decodedAccessToken._id);
 
     (req as any).user = user;
+
+    // console.log("User: ", (req as any).user);
 
     next();
   } catch (error: Error | any) {

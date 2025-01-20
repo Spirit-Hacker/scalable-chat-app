@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import fs from "fs";
 
 const app: Express = express();
 
@@ -25,6 +26,11 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: true }));
+
+if (!fs.existsSync("./uploads")) {
+  fs.mkdirSync("./uploads", { recursive: true });
+  console.log("Uploads directory created");
+}
 
 // import routes
 import userRouter from "./routes/user.routes";
