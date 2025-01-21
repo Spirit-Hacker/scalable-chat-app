@@ -1,12 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import User from "../models/user.model";
+import User, { IUser } from "../models/user.model";
 
-interface accessTokenPayload extends JwtPayload {
+interface AccessTokenPayload extends JwtPayload {
   _id: string;
   email: string;
   username: string;
   fullName: string;
+}
+
+// Extend the Request interface to include the user property
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: IUser; // Adds `user` property to `Request`
+  }
 }
 
 export const verifyUserAccessToken = async (
@@ -31,7 +38,7 @@ export const verifyUserAccessToken = async (
     const decodedAccessToken = jwt.verify(
       accessToken,
       process.env.ACCESS_TOKEN_SECRET || ""
-    ) as accessTokenPayload;
+    ) as AccessTokenPayload;
 
     if (!decodedAccessToken || !decodedAccessToken._id) {
       res.status(400).json({
@@ -44,7 +51,15 @@ export const verifyUserAccessToken = async (
 
     const user = await User.findById(decodedAccessToken._id);
 
-    (req as any).user = user;
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "Unauthorized - User not found",
+      });
+      return;
+    }
+
+    req.user = user;
 
     // console.log("User: ", (req as any).user);
 

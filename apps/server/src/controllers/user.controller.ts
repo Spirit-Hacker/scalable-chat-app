@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import User from "../models/user.model";
+import User, { IUser } from "../models/user.model";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { uploadOnCloudinary } from "../utils/cloudinary";
-import { Schema } from "mongoose";
 
 interface refreshTokenPayload extends JwtPayload {
   _id: string;
@@ -223,7 +222,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).body.userId;
+    const { _id : userId } = req.user as IUser;
     console.log("User Id: ", userId);
     const user = await User.findByIdAndUpdate(
       userId,
@@ -280,7 +279,15 @@ export const getAllUsers = async (
   res: Response
 ): Promise<void> => {
   try {
-    const userId = (req as any).user._id;
+    const { _id : userId } = req.user as IUser;
+
+    if (!userId) {
+      res.status(400).json({
+        success: false,
+        message: "User is not Authenticated.",
+      });
+      return;
+    }
 
     const users = await User.find();
 
@@ -313,9 +320,9 @@ export const getAllUsers = async (
 
 export const uploadProfilePicture = async (req: Request, res: Response) => {
   try {
-    const { _id : userId } = (req as any).user;
-    console.log("Uploader Id: ", userId);
-    console.log("Req File: ", req.files);
+    const { _id : userId } = req.user as IUser;
+    // console.log("Uploader Id: ", userId);
+    // console.log("Req File: ", req.file);
 
     if (!req.file || !req.file.path) {
       res.status(400).json({

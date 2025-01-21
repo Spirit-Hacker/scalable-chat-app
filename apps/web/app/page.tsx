@@ -16,7 +16,8 @@ const showUsers: React.FC = () => {
   const [receiverName, setReceiverName] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [senderId, setSenderId] = useState<string>("");
-  const [receiverId, setReceiverId] = useState("");
+  const [receiverId, setReceiverId] = useState<string>("");
+  const [receiverProfilePicture, setReceiverProfilePicture] = useState<string>("");
   const [me, setMe] = useState<User | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -111,6 +112,7 @@ const showUsers: React.FC = () => {
                           setReceiverId(user._id);
                           setSenderId(localStorage.getItem("userId") as string);
                           setReceiverName(user.fullName);
+                          setReceiverProfilePicture(user.profilePicture);
                         }}
                       >
                         <div className="flex gap-2 items-center">
@@ -137,7 +139,7 @@ const showUsers: React.FC = () => {
                 <div className="h-[50px] w-[95%] flex items-center justify-start px-10 py-3 mx-auto mt-3 gap-5 rounded-3xl bg-[#1F173E] text-white">
                   <div className="w-[40px] h-[40px] rounded-full bg-purple-500">
                     <img
-                      src="https://t4.ftcdn.net/jpg/10/75/86/19/360_F_1075861908_Q2ZBfVQNvMSSzbZJCXwfu5Ew5CcfelrG.jpg"
+                      src={receiverProfilePicture}
                       alt="PF"
                       className="w-full h-full rounded-full overflow-hidden object-cover"
                     />

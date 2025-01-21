@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Message from "../models/message.model";
 import Conversation from "../models/conversation.model";
 import { Schema } from "mongoose";
+import { IUser } from "../models/user.model";
 
 export const storeMessage = async (req: Request, res: Response) => {
   try {
@@ -71,7 +72,7 @@ export const storeMessage = async (req: Request, res: Response) => {
 
 export const getMessages = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user._id;
+    const { _id: userId } = req.user as IUser;
     const { id: friendId } = req.params;
 
     let conversation = await Conversation.findOne({

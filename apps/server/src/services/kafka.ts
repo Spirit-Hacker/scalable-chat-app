@@ -46,7 +46,6 @@ export async function startMessageConsumer() {
 
       console.log("New message received on kafka", message.value.toString());
       try {
-        // TODO: Add database query
         console.log("Message in kafka consumer", message.value.toString());
 
         const data = JSON.parse(message.value.toString());

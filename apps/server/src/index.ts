@@ -1,18 +1,18 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import http from "http";
+import http, { Server as HttpServer } from "http";
 import SocketService from "./services/socket";
 import { startMessageConsumer } from "./services/kafka";
 import { app } from "./app";
 import connectDB from "./services/db";
 
-function init() {
+function init(): void {
   startMessageConsumer();
-  const socketService = new SocketService();
+  const socketService: SocketService = new SocketService();
 
-  const httpServer = http.createServer(app);
-  const PORT = process.env.PORT || 8000;
+  const httpServer: HttpServer = http.createServer(app);
+  const PORT: number = parseInt(process.env.PORT || "8000", 10);
 
   socketService.io.attach(httpServer);
 
